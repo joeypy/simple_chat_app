@@ -4,18 +4,25 @@ import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { Form, FormField } from "../ui/form";
-import { loginFormSchema, LoginFormValues } from "@/schema/login";
+import { loginFormSchema, LoginFormValues } from "@/schemas/zod/login";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { EmailInput } from "../ui/input-email";
 import { PasswordInput } from "../ui/input-password";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
+import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
+import { AlertCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { DEFAULT_LOGIN_REDIRECT } from "@/config/routes";
+import { login } from "@/actions/login";
 
 export const description =
   "A login page with two columns. The first column has the login form with email and password. There's a Forgot your passwork link and a link to sign up if you do not have an account. The second column has a cover image.";
 
 export function LoginForm() {
+  const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginFormSchema),
@@ -26,10 +33,19 @@ export function LoginForm() {
   });
 
   const onSubmit = async (formData: LoginFormValues) => {
-    console.log(formData);
+    setError(null); // Inicia la carga
+    startTransition(async () => {
+      const response = await login(formData);
+      if (response?.error) {
+        setError(response.error);
+      } else {
+        router.push(DEFAULT_LOGIN_REDIRECT);
+      }
+    });
   };
+
   return (
-    <div className="w-full lg:grid lg:min-h-[600px] lg:grid-cols-2 xl:min-h-[800px]">
+    <div className="w-full h-screen lg:grid  lg:grid-cols-2 ">
       <div className="flex items-center justify-center py-12">
         <div className="mx-auto grid w-[350px] gap-6">
           <div className="grid gap-2 text-center">
@@ -97,7 +113,7 @@ export function LoginForm() {
           </Form>
           <div className="mt-4 text-center text-sm">
             Don&apos;t have an account?{" "}
-            <Link href="#" className="underline">
+            <Link href="/register" className="underline">
               Sign up
             </Link>
           </div>

@@ -12,6 +12,7 @@ export const env = createEnv({
       .enum(["development", "testing", "production"])
       .default("development"),
     SESSION_AUTH: z.string().min(32),
+    DB_FILE_NAME: z.string().min(1),
   },
   /*
    * Environment variables available on the client (and server).
@@ -31,6 +32,7 @@ export const env = createEnv({
   runtimeEnv: {
     NODE_ENV: process.env.NODE_ENV,
     SESSION_AUTH: process.env.SESSION_AUTH,
+    DB_FILE_NAME: process.env.DB_FILE_NAME,
     // NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
     // NEXT_PUBLIC_SOCKET_SERVER_URL: process.env.NEXT_PUBLIC_SOCKET_SERVER_URL,
   },

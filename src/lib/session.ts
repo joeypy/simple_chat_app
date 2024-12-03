@@ -38,16 +38,11 @@ export async function getSession() {
   return payload as SessionPayload;
 }
 
-export async function createSession({
-  userId,
-  tokenSession,
-  tokenRefresh,
-}: SessionPayload) {
+export async function createSession({ userId, tokenSession }: SessionPayload) {
   // Genera el token JWT
   const sessionToken = await encrypt({
     userId,
     tokenSession,
-    tokenRefresh,
   });
 
   const expiresAt = new Date(Date.now() + 1 * 24 * 60 * 60 * 1000); // 1 day
